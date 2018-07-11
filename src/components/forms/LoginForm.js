@@ -1,7 +1,8 @@
 import React from 'react';
 import { Form, Button } from "semantic-ui-react";
 import Validator from "validator";
-import inlineError from "../messages/InlineError";
+import InlineError from "../messages/InlineError";
+import PropTypes from "prop-types"
 
 class LoginForm extends React.Component {
     state = {
@@ -19,6 +20,9 @@ class LoginForm extends React.Component {
     onSubmit = () =>{
         const errors = this.validate(this.state.data);
         this.setState({errors});
+        if (Object.keys(errors).length === 0){
+            this.props.submit(this.state.data);
+        }
     }
 
     validate = (data )=>{
@@ -29,10 +33,10 @@ class LoginForm extends React.Component {
     }
 
     render() {
-        const { data } = this.state; //deconstructs value. else i would need to write this.state.data.email into value
-        return (
+        const { data, errors } = this.state; //deconstructs value. else i would need to write this.state.data.email into value
+        return (                            
             <Form onSubmit={this.onSubmit}>
-                <Form.Field>
+                <Form.Field error={!!errors.email}>
                     <label htmlFor="email">email</label>
                     <input
                         type="email"
@@ -42,8 +46,9 @@ class LoginForm extends React.Component {
                         value={data.email}
                         onChange={this.onChange}
                     />
+                    {errors.email && <InlineError text={errors.email}/>}
                 </Form.Field>
-                <Form.Field>
+                <Form.Field error={!!errors.password}>
                     <label htmlFor="email">email</label>
                     <input
                         type="password"
@@ -53,6 +58,7 @@ class LoginForm extends React.Component {
                         value={data.password}
                         onChange={this.onChange}
                     />
+                    {errors.password && <InlineError text={errors.password}/>}
                 </Form.Field>
                 <Button primary>Login  </Button>
             </Form>
@@ -61,4 +67,9 @@ class LoginForm extends React.Component {
 
     }
 }
+
+LoginForm.protoTypes = {
+    submit: PropTypes.func.isRequired
+}
+
 export default LoginForm
